@@ -22,6 +22,12 @@ public class Language {
     public Language() {
         this.words = new HashSet<>();
     }
+    public Language(LanguageEnum name, String description) {
+        super();
+
+        this.name = name;
+        this.description = description;
+    }
 
     public long getId() {
         return id;
