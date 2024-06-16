@@ -1,6 +1,7 @@
 package com.dictionaryapp.controller;
 
 import com.dictionaryapp.model.dto.RegisterUserDTO;
+import com.dictionaryapp.model.dto.LoginUserDTO;
 import com.dictionaryapp.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -20,8 +21,12 @@ public class UserController {
     }
 
     @ModelAttribute("registerData")
-    public RegisterUserDTO emptyUserDTO(){
+    public RegisterUserDTO emptyRegisterDTO(){
         return new RegisterUserDTO();
+    }
+    @ModelAttribute("loginData")
+    public LoginUserDTO emptyLoginDTO(){
+        return new LoginUserDTO();
     }
 
     @GetMapping("/register")
@@ -30,18 +35,39 @@ public class UserController {
         return "register";
     }
     @GetMapping("/login")
-    public String doLogin(){
+    public String viewLogin(){
         return "login";
     }
 
     @ PostMapping("/register")
     public String doRegister(@Valid RegisterUserDTO data, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors() || !userService.registerUser(data)){
             redirectAttributes.addFlashAttribute("registerData", data);
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.registerData", bindingResult);
             return "redirect:/register";
         }
-
         return "redirect:/login";
+    }
+    @PostMapping("/login")
+    public String doLogin(@Valid LoginUserDTO loginData, BindingResult bindingResult, RedirectAttributes redirectAttributes){
+        if (bindingResult.hasErrors()){
+            redirectAttributes.addFlashAttribute("loginData", loginData);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.loginData", bindingResult);
+
+            return "redirect:/login";
+        }
+        boolean success = userService.login(loginData);
+        if (!success){
+            redirectAttributes.addFlashAttribute("loginData", loginData);
+            redirectAttributes.addFlashAttribute("userPassMismatch", true);
+
+            return "redirect:/login";
+        }
+        return "redirect:/home";
+    }
+    @PostMapping("/logout")
+    public String doLogout() {
+        userService.logout();
+        return "redirect:/";
     }
 }
