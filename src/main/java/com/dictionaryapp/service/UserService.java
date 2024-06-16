@@ -1,5 +1,6 @@
 package com.dictionaryapp.service;
 
+import com.dictionaryapp.model.dto.RegisterUserDTO;
 import com.dictionaryapp.repo.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public boolean registerUser() {
+    public boolean registerUser(RegisterUserDTO registerUserDTO) {
         return true;
     }
 }
